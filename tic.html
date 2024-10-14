@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #c0c598;
+        }
+
+        .game-container {
+            text-align: center;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            margin: 20px auto;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #99b9e7;
+            border: 2px solid hsl(0, 0%, 0%);
+            font-size: 2em;
+            cursor: pointer;
+        }
+
+        #message {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        #restart {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Tic-Tac-Toe</h1>
+        <div id="message">Player X's turn</div>
+        <div id="board" class="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <button id="restart">Restart Game</button>
+    </div>
+    <script>
+        const board = document.querySelectorAll('.cell');
+        const message = document.getElementById('message');
+        const restartButton = document.getElementById('restart');
+
+        let currentPlayer = 'X';
+        let gameState = Array(9).fill(null);  // Initial empty state
+        let isGameOver = false;
+
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],  // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],  // Columns
+            [0, 4, 8], [2, 4, 6]              // Diagonals
+        ];
+
+        // Handle user click
+        board.forEach(cell => {
+            cell.addEventListener('click', handleClick);
+        });
+
+        function handleClick(event) {
+            const index = event.target.getAttribute('data-index');
+
+            if (gameState[index] || isGameOver) return;
+
+            gameState[index] = currentPlayer;
+            event.target.textContent = currentPlayer;
+
+            if (checkWinner()) {
+                message.textContent = `${currentPlayer} wins!`;
+                isGameOver = true;
+            } else if (gameState.every(cell => cell)) {
+                message.textContent = 'It\'s a draw!';
+                isGameOver = true;
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                message.textContent = `Player ${currentPlayer}'s turn`;
+            }
+        }
+
+        function checkWinner() {
+            return winningCombinations.some(combination => {
+                return combination.every(index => {
+                    return gameState[index] === currentPlayer;
+                });
+            });
+        }
+
+        // Restart the game
+        restartButton.addEventListener('click', restartGame);
+
+        function restartGame() {
+            gameState.fill(null);
+            board.forEach(cell => cell.textContent = '');
+            currentPlayer = 'X';
+            isGameOver = false;
+            message.textContent = `Player ${currentPlayer}'s turn`;
+        }
+    </script>
+</body>
+</html>
